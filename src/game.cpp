@@ -46,7 +46,8 @@ void arkanoid::Game::init_screen_settings(){
 	init_colors();
 	cbreak();
 	noecho();
-	introduction();
+	curs_set(0)
+;	introduction();
 	keypad(stdscr, TRUE);
 	srand (time(NULL));
 	default_max_col = 80;
