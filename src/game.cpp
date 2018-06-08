@@ -39,15 +39,15 @@ void arkanoid::Game::new_level_message(){
 	clear();
 }
 
-void arkanoid::Game::init_screen_settings(){
+void arkanoid::Game::init_startup_settings(){
 
 	initscr();
 	start_color();
 	init_colors();
 	cbreak();
 	noecho();
-	curs_set(0)
-;	introduction();
+	curs_set(0);
+	introduction();
 	keypad(stdscr, TRUE);
 	srand (time(NULL));
 	default_max_col = 80;
@@ -63,18 +63,20 @@ void arkanoid::Game::init_game_settings(){
 	getmaxyx(stdscr, actual_max_row, actual_max_col);
 	stop = false;
 	dr_counter = 0;
-	is_ball_moving = false;
+	ball1.stop();
 	ticks = 0;
+	ball_ticks = 100000;
 	if(level_nr < 50)
 		level_nr++;
 		
-	bar_speed = 4;
+	bar_speed = 5;
 	if(rand() % 2 == 0)
 		col_mod = -1;
 	else
 		col_mod = 1;
 
 	row_mod = -1;
+	ball2.not_visible();
 	draw_border();
 	load_level();
 	draw_object(bar);
@@ -136,46 +138,88 @@ void arkanoid::Game::delete_border(){
 	}
 }
 
+void arkanoid::Game::update_bonusball_position(){
+	if(ball2.is_ball_moving()){
+		if(ticks % (200000 - (level_nr * 2500)) == 0){
+
+			erase_object(ball2);
+			ball2.d_start_row++;
+			ball2.d_end_row++;
+
+			if(ball2.d_start_row >= bar.d_start_row && !(ball2.d_start_col >= bar.d_start_col && ball2.d_start_col <= bar.d_end_col)){
+				ball2.visible = false;
+				ball2.stop();
+			} else if(ball2.d_start_row == bar.d_start_row && ball2.d_start_col >= bar.d_start_col && ball2.d_start_col <= bar.d_end_col) {
+				ball2.visible = false;
+				ball2.stop();
+				erase_bricks();
+				draw_bricks();
+				unsigned power = rand() % 3;
+				switch(power){
+					case 0:
+						health++;
+						draw_health();
+						use_color(5);
+						mvprintw(0, (actual_max_col / 2) - 3, "+1 Vita");
+						break;
+					case 1:
+						bar_speed += 2;
+						use_color(5);
+						mvprintw(0, (actual_max_col / 2) - 12, "Velocità barra aumentata");
+						break;
+					case 2:
+						ball_ticks = 170000;
+						use_color(5);
+						mvprintw(0, (actual_max_col / 2) - 13, "Velocità pallina diminuita"); 
+						break;
+					default:
+						break;
+				}
+			} else {
+				draw_object(ball2);
+			}
+		}
+	}
+}
+
 unsigned arkanoid::Game::update_ball_position(){
 
-	if(!is_ball_moving && g_input == ' '){
+	if(!ball1.is_ball_moving() && g_input == ' '){
 
-		is_ball_moving = true;
+		ball1.move();
 
 	}
 
 	int ob_id;
 	bool anglex = false, angley = false;
 
-	if(is_ball_moving){
-		if(ticks % (200000 - (level_nr * 2500)) == 0){
-			Drawable *bar = &drawed[drawed.size() - 2];
-			Drawable *ball = &drawed[drawed.size() - 1];
+	if(ball1.is_ball_moving()){
+		if(ticks % (ball_ticks - (level_nr * 2500)) == 0){
 
-			ball_px = ball->d_start_col;
-			ball_py = ball->d_start_row;
-			erase_object(*ball);
-			ball->d_start_col += col_mod;
-			ball->d_end_col += col_mod;
-			ball->d_start_row += row_mod;
-			ball->d_end_row += row_mod;
-			if(alevel->M[ball->d_start_row][ball->d_start_col] == 0){
-				if((ball->d_start_row >= bar->d_start_row) && (ball->d_start_col >= bar->d_start_col) && (ball->d_start_col <= bar->d_end_col)){
+			ball_px = ball1.d_start_col;
+			ball_py = ball1.d_start_row;
+			erase_object(ball1);
+			ball1.d_start_col += col_mod;
+			ball1.d_end_col += col_mod;
+			ball1.d_start_row += row_mod;
+			ball1.d_end_row += row_mod;
+			if(alevel->M[ball1.d_start_row][ball1.d_start_col] == 0){
+				if((ball1.d_start_row >= bar.d_start_row) && (ball1.d_start_col >= bar.d_start_col) && (ball1.d_start_col <= bar.d_end_col)){
 					row_mod = -row_mod;
-					ball->d_start_col += col_mod;
-					ball->d_end_col += col_mod;
-					ball->d_start_row += row_mod;
-					ball->d_end_row += row_mod;
-					draw_object(*ball);
+					ball1.d_start_col += col_mod;
+					ball1.d_end_col += col_mod;
+					ball1.d_start_row += row_mod;
+					ball1.d_end_row += row_mod;
+					draw_object(ball1);
 
-				} else if((ball->d_start_row >= bar->d_start_row) && !((ball->d_start_col >= bar->d_start_col) && (ball->d_start_col <= bar->d_end_col))){
+				} else if((ball1.d_start_row >= bar.d_start_row) && !((ball1.d_start_col >= bar.d_start_col) && (ball1.d_start_col <= bar.d_end_col))){
 					if(health > 1){
-						is_ball_moving = false;
-						ball->d_start_col = (bar->d_end_col + bar->d_start_col) / 2;
-						ball->d_end_col = (bar->d_end_col + bar->d_start_col) / 2;
-						ball->d_start_row = 21;
-						ball->d_end_row = 21;
-						draw_object(*ball);
+						ball1.stop();
+						ball1.d_start_col = (bar.d_end_col + bar.d_start_col) / 2;
+						ball1.d_end_col = (bar.d_end_col + bar.d_start_col) / 2;
+						ball1.d_start_row = 21;
+						ball1.d_end_row = 21;
+						draw_object(ball1);
 						if(rand() % 2 == 0)
 							col_mod = -1;
 						else
@@ -188,10 +232,10 @@ unsigned arkanoid::Game::update_ball_position(){
 						return 1;
 					}
 				} else {
-					draw_object(*ball);
+					draw_object(ball1);
 				}
 			} else {
-				ob_id = alevel->M[ball->d_start_row][ball->d_start_col];
+				ob_id = alevel->M[ball1.d_start_row][ball1.d_start_col];
 				if(alevel->M[ball_py + row_mod][ball_px] != 0){
 					row_mod = -row_mod;
 				} else {
@@ -210,53 +254,63 @@ unsigned arkanoid::Game::update_ball_position(){
 				}
 
 				if(ob_id != -1){
-					erase_object(drawed[ob_id - 1]);
-					drawed[ob_id - 1].not_visible();
-					alevel->mark_element(drawed[ob_id - 1].d_start_row, drawed[ob_id - 1].d_start_col, 0);
+					if(bricks[ob_id - 1].is_bonus_brick()){
+						ball2.d_start_row = bricks[ob_id - 1].d_start_row;
+						ball2.d_end_row = bricks[ob_id - 1].d_start_row;
+						ball2.d_start_col = bricks[ob_id - 1].d_start_col;
+						ball2.d_end_col = bricks[ob_id - 1].d_start_col;
+						ball2.visible = true;
+						ball2.move();
+					} 
+
+					erase_object(bricks[ob_id - 1]);
+					bricks[ob_id - 1].not_visible();
+					alevel->mark_element(bricks[ob_id - 1].d_start_row, bricks[ob_id - 1].d_start_col, 0);
 					if(ob_id == 1){
 						return 2;
 					}
 				}
 				
-				ball->d_start_col += col_mod;
-				ball->d_end_col += col_mod;
-				ball->d_start_row += row_mod;
-				ball->d_end_row += row_mod;
+				ball1.d_start_col += col_mod;
+				ball1.d_end_col += col_mod;
+				ball1.d_start_row += row_mod;
+				ball1.d_end_row += row_mod;
 
-				if(alevel->M[ball->d_start_row][ball->d_start_col] != -1){
-					if((ball->d_start_row == bar->d_start_row) && (ball->d_start_col >= bar->d_start_col) && (ball->d_start_col <= bar->d_end_col)){
+				if(alevel->M[ball1.d_start_row][ball1.d_start_col] != -1){
+					if((ball1.d_start_row == bar.d_start_row) && (ball1.d_start_col >= bar.d_start_col) && (ball1.d_start_col <= bar.d_end_col)){
 						if(anglex){
 							col_mod = -col_mod;
-							ball->d_start_col += col_mod;
-							ball->d_end_col += col_mod;
-							ball->d_start_row += row_mod;
-							ball->d_end_row += row_mod;
-							draw_object(*ball);
+							ball1.d_start_col += col_mod;
+							ball1.d_end_col += col_mod;
+							ball1.d_start_row += row_mod;
+							ball1.d_end_row += row_mod;
+							draw_object(ball1);
 						} else if(angley){
 							row_mod = -row_mod;
-							ball->d_start_col += col_mod;
-							ball->d_end_col += col_mod;
-							ball->d_start_row += row_mod;
-							ball->d_end_row += row_mod;
-							draw_object(*ball);
+							ball1.d_start_col += col_mod;
+							ball1.d_end_col += col_mod;
+							ball1.d_start_row += row_mod;
+							ball1.d_end_row += row_mod;
+							draw_object(ball1);
 						}
-					} else if((ball->d_start_row > bar->d_start_row) && (ball->d_start_col >= bar->d_start_col) && (ball->d_start_col <= bar->d_end_col)){
+					} else if((ball1.d_start_row > bar.d_start_row) && (ball1.d_start_col >= bar.d_start_col) && (ball1.d_start_col <= bar.d_end_col)){
 						if(angley)
 							row_mod = -row_mod;
 						else if(anglex)
 							col_mod = -col_mod;
 							
-						ball->d_start_col = ball_px + col_mod;
-						ball->d_end_col = ball_px + col_mod;
-						ball->d_start_row = ball_py + row_mod;
-						ball->d_end_row = ball_py + row_mod;
-					} else if((ball->d_start_row >= bar->d_start_row) && !((ball->d_start_col >= bar->d_start_col) && (ball->d_start_col <= bar->d_end_col))){
-						is_ball_moving = false;
-						ball->d_start_col = (bar->d_end_col + bar->d_start_col) / 2;
-						ball->d_end_col = (bar->d_end_col + bar->d_start_col) / 2;
-						ball->d_start_row = 21;
-						ball->d_end_row = 21;
-						draw_object(*ball);
+						ball1.d_start_col = ball_px + col_mod;
+						ball1.d_end_col = ball_px + col_mod;
+						ball1.d_start_row = ball_py + row_mod;
+						ball1.d_end_row = ball_py + row_mod;
+						draw_object(ball1);
+					} else if((ball1.d_start_row >= bar.d_start_row) && !((ball1.d_start_col >= bar.d_start_col) && (ball1.d_start_col <= bar.d_end_col))){
+						ball1.stop();
+						ball1.d_start_col = (bar.d_end_col + bar.d_start_col) / 2;
+						ball1.d_end_col = (bar.d_end_col + bar.d_start_col) / 2;
+						ball1.d_start_row = 21;
+						ball1.d_end_row = 21;
+						draw_object(ball1);
 						if(rand() % 2 == 0)
 							col_mod = -1;
 						else
@@ -265,27 +319,24 @@ unsigned arkanoid::Game::update_ball_position(){
 						health--;
 						draw_health();
 					} else {
-						draw_object(*ball);
+						draw_object(ball1);
 					}
 				} else {
 					if(anglex){
 						col_mod = -col_mod;
-						ball->d_start_col += col_mod;
-						ball->d_end_col += col_mod;
-						ball->d_start_row += row_mod;
-						ball->d_end_row += row_mod;
-						draw_object(*ball);
+						ball1.d_start_col += col_mod;
+						ball1.d_end_col += col_mod;
+						ball1.d_start_row += row_mod;
+						ball1.d_end_row += row_mod;
 					} else if(angley){
 						row_mod = -row_mod;
-						ball->d_start_col += col_mod;
-						ball->d_end_col += col_mod;
-						ball->d_start_row += row_mod;
-						ball->d_end_row += row_mod;
-						draw_object(*ball);
+						ball1.d_start_col += col_mod;
+						ball1.d_end_col += col_mod;
+						ball1.d_start_row += row_mod;
+						ball1.d_end_row += row_mod;
 					}
-
+					draw_object(ball1);
 				}
-				
 			}
 		}
 	}
@@ -295,58 +346,56 @@ unsigned arkanoid::Game::update_ball_position(){
 void arkanoid::Game::update_bar_position(){
 
 	float xdiff;
-	Drawable *bar = &drawed[drawed.size() - 2];
-	Drawable *ball = &drawed[drawed.size() - 1];
 	if(g_input == KEY_LEFT){
-		if(bar->d_start_col > bar_speed){
-			erase_object(*bar);
-			bar->d_start_col -= bar_speed;
-			bar->d_end_col -= bar_speed;
-			draw_object(*bar);
-			if(!is_ball_moving){
-				erase_object(*ball);
-				ball->d_start_col -= bar_speed;
-				ball->d_end_col -= bar_speed;
-				draw_object(*ball);
+		if(bar.d_start_col > bar_speed){
+			erase_object(bar);
+			bar.d_start_col -= bar_speed;
+			bar.d_end_col -= bar_speed;
+			draw_object(bar);
+			if(!ball1.is_ball_moving()){
+				erase_object(ball1);
+				ball1.d_start_col -= bar_speed;
+				ball1.d_end_col -= bar_speed;
+				draw_object(ball1);
 			}
 		} else {
-			if(bar->d_start_col > 1){
-				erase_object(*bar);
-				bar->d_start_col --;
-				bar->d_end_col --;
-				draw_object(*bar);
-				if(!is_ball_moving){
-					erase_object(*ball);
-					ball->d_start_col --;
-					ball->d_end_col --;
-					draw_object(*ball);
+			if(bar.d_start_col > 1){
+				erase_object(bar);
+				bar.d_start_col --;
+				bar.d_end_col --;
+				draw_object(bar);
+				if(!ball1.is_ball_moving()){
+					erase_object(ball1);
+					ball1.d_start_col --;
+					ball1.d_end_col --;
+					draw_object(ball1);
 				}
 			}
 		}
 	} else if(g_input == KEY_RIGHT){
 		
-		if(bar->d_end_col < default_max_col - bar_speed - 2){
-			erase_object(*bar);
-			bar->d_start_col += bar_speed;
-			bar->d_end_col += bar_speed;
-			draw_object(*bar);
-			if(!is_ball_moving){
-				erase_object(*ball);
-				ball->d_start_col += bar_speed;
-				ball->d_end_col += bar_speed;
-				draw_object(*ball);
+		if(bar.d_end_col < default_max_col - bar_speed - 2){
+			erase_object(bar);
+			bar.d_start_col += bar_speed;
+			bar.d_end_col += bar_speed;
+			draw_object(bar);
+			if(!ball1.is_ball_moving()){
+				erase_object(ball1);
+				ball1.d_start_col += bar_speed;
+				ball1.d_end_col += bar_speed;
+				draw_object(ball1);
 			}
 		} else {
-			if(bar->d_end_col < default_max_col - 2){
-				erase_object(*bar);
-				bar->d_start_col ++;
-				bar->d_end_col ++;
-				draw_object(*bar);
-				if(!is_ball_moving){
-					erase_object(*ball);
-					ball->d_start_col ++;
-					ball->d_end_col ++;
-					draw_object(*ball);
+			if(bar.d_end_col < default_max_col - 2){
+				erase_object(bar);
+				bar.d_start_col ++;
+				bar.d_end_col ++;
+				draw_object(bar);
+				if(!ball1.is_ball_moving()){
+					erase_object(ball1);
+					ball1.d_start_col ++;
+					ball1.d_end_col ++;
+					draw_object(ball1);
 				}
 			}
 		}
@@ -354,13 +403,13 @@ void arkanoid::Game::update_bar_position(){
 }
 
 void arkanoid::Game::draw_health(){
-	use_color(4);
+	use_color(5);
 	mvprintw(actual_max_row - 1, (actual_max_col / 4) - 6, "Vite: %d", health);
 	refresh();
 }
 
 void arkanoid::Game::draw_level_nr(){
-	use_color(4);
+	use_color(5);
 	mvprintw(actual_max_row - 1, round(actual_max_col * (static_cast<float>(3)/static_cast<float>(4))) - 9, "Livello: %d", level_nr);
 	refresh();
 }
@@ -368,7 +417,7 @@ void arkanoid::Game::draw_level_nr(){
 arkanoid::Game::Game() {
 
 	alevel = new arkanoid::Level();
-	init_screen_settings();
+	init_startup_settings();
 	init_game_settings();
 	
 }
@@ -385,10 +434,16 @@ void arkanoid::Game::new_game(){
 
 void arkanoid::Game::end_actual_game(){
 	clear();
-	drawed.erase(drawed.begin(), drawed.end());
+	ball1.d_start_col = 39;
+	ball1.d_end_col = 39;
+	ball1.d_start_row = 21;
+	ball1.d_end_row = 21;
+	bar.d_start_col = 34;
+	bar.d_end_col = 44;
+	bar.d_start_row = 22;
+	bar.d_end_row = 22;
 	bricks.erase(bricks.begin(), bricks.end());
-	ball1.d_id = 0;
-	bar.d_id = 0;
+	bonus_index.erase(bonus_index.begin(), bonus_index.end());
 }
 
 void arkanoid::Game::get_input(){
@@ -410,6 +465,18 @@ void arkanoid::Game::exit(){
 bool arkanoid::Game::load_level(){
 
 	unsigned br_count = 0;
+	unsigned bonus_br = alevel->brick_nr / 9;
+
+	for(unsigned i = 0; i < bonus_br; i++){
+
+		unsigned index = rand() % (alevel->brick_nr - 1) + 1;
+		while(std::find(bonus_index.begin(), bonus_index.end(), index) != bonus_index.end()){
+			index = rand() % (alevel->brick_nr - 1) + 2;
+		}
+		bonus_index.push_back(index);
+
+	}
+
 	for(int k = 1; k < alevel->brick_nr; k++){
 		for(int i = 1; i < arkanoid::Level::map_num_rows; i+= arkanoid::Brick::height){
 			for(int j = 1; j < arkanoid::Level::map_num_cols; j+= arkanoid::Brick::width){
@@ -418,12 +485,20 @@ bool arkanoid::Game::load_level(){
 						bricks.push_back(WinningBrick(i,j));
 					else
 						bricks.push_back(NormalBrick(i,j));
+
 					draw_object(bricks[br_count]);
 					br_count++;
 				}
 			}
 		}
 	}
+
+	for(unsigned i = 0; i < bonus_index.size(); i++){
+
+		bricks[bonus_index[i]].set_as_bonus_brick();
+
+	}
+
 }
 
 void arkanoid::Game::update_all(){
@@ -443,38 +518,45 @@ void arkanoid::Game::update_all(){
 	}
 }
 
+void arkanoid::Game::erase_bricks(){
+	for(unsigned i = 0; i < bricks.size(); i++){
+		erase_object(bricks[i]);
+	}
+}
+
+void arkanoid::Game::draw_bricks(){
+	for(unsigned i = 0; i < bricks.size(); i++){
+		draw_object(bricks[i]);
+	}
+}
+
 unsigned arkanoid::Game::update_scene(){
 
 	if(is_scrsize_changed()){
 		delete_border();
-		for(unsigned i = 0; i < drawed.size(); i++){
-			erase_object(drawed[i]);
-		}
-
+		erase_bricks();
+		erase_object(ball1);
+		erase_object(ball2);
+		erase_object(bar);
 		getmaxyx(stdscr, actual_max_row, actual_max_col);
 		
 		draw_border();
-
-		for(unsigned i = 0; i < drawed.size(); i++){
-			draw_object(drawed[i]);
-		}
+		draw_bricks();
+		draw_object(ball1);
+		draw_object(ball2);
+		draw_object(bar);
 		draw_health();
 		draw_level_nr();
 	}
 
 	update_bar_position();
+	update_bonusball_position();
 
 	return update_ball_position();
 }
 
 void arkanoid::Game::draw_object(Drawable &dr){
 	if(dr.is_visible()){
-		if(dr.d_id == 0){
-			dr_counter++;
-			dr.d_id = dr_counter;
-			drawed.push_back(dr);
-		}
-		
 
 		float xdiff = static_cast<float>(actual_max_col) / static_cast<float>(default_max_col);
 		float ydiff = static_cast<float>(actual_max_row) / static_cast<float>(default_max_row);

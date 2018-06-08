@@ -1,10 +1,10 @@
-#ifndef BALL_H
-#define BALL_H
+#ifndef BBALL_H
+#define BBALL_H
 #include "drawable.h"
 
 namespace arkanoid{
 
-    class Ball: public Drawable{
+    class BonusBall: public Drawable{
 
         bool is_moving;
 
@@ -12,7 +12,7 @@ namespace arkanoid{
         bool is_ball_moving();
         void move();
         void stop();
-        Ball();
+        BonusBall();
 
     };
 

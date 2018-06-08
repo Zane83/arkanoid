@@ -6,6 +6,7 @@ arkanoid::Level::Level(){
 }
 
 void arkanoid::Level::init_level(unsigned difficulty){
+    level_nr = difficulty;
     srand (time(NULL));
     init_map();
     brick_nr = round(difficulty * (static_cast<float>(3) / static_cast<float>(2))) + 10;
@@ -18,7 +19,7 @@ void arkanoid::Level::init_level(unsigned difficulty){
 }
 
 void arkanoid::Level::winner_block_positioning(){
-    int row = rand() % (heights - 2) + 1;
+    int row = rand() % (heights - 2 - (level_nr / 16)) + 1;
     int col = rand() % (slots - 2) + 1;
     corner_elements_positioning(1, col, row);
     corner_elements_positioning(2, col - 1, row);

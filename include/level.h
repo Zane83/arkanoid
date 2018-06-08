@@ -11,6 +11,7 @@ namespace arkanoid {
         friend class Game;
 
         unsigned brick_nr;
+        unsigned level_nr;
         static const unsigned map_num_rows = 19;
         static const unsigned map_num_cols = 80;
         unsigned slots = (map_num_cols - 2) / arkanoid::Brick::width;
