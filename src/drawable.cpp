@@ -21,85 +21,85 @@
 / 'color' è l'intero indicante il colore che verrà passato al costruttore di default di Drawable
 */
 
-arkanoid::Drawable::Drawable(char ch, int start_row, int start_col, int end_row, int end_col, int color):
+arzanoid::Drawable::Drawable(char ch, int start_row, int start_col, int end_row, int end_col, int color):
  d_ch(ch), d_start_row(start_row), d_start_col(start_col), d_end_row(end_row), d_end_col(end_col), d_color(color), visible(true){
 	 
 }
 
 //see drawable.h
 //guarda drawable.h 
-void arkanoid::Drawable::not_visible(){
+void arzanoid::Drawable::not_visible(){
     visible = false;
 }
 
 //see drawable.h
 //guarda drawable.h 
-void arkanoid::Drawable::set_visible(){
+void arzanoid::Drawable::set_visible(){
     visible = true;
 }
 
 //see drawable.h
 //guarda drawable.h 
-bool arkanoid::Drawable::is_visible(){
+bool arzanoid::Drawable::is_visible(){
     return visible;
 }
 
 //see drawable.h
 //guarda drawable.h 
-void arkanoid::Drawable::set_start_row(int sr){
+void arzanoid::Drawable::set_start_row(int sr){
     d_start_row = sr;
 }
 
 //see drawable.h
 //guarda drawable.h 
-void arkanoid::Drawable::set_end_row(int er){
+void arzanoid::Drawable::set_end_row(int er){
     d_end_row = er;
 }
 
 //see drawable.h
 //guarda drawable.h 
-void arkanoid::Drawable::set_start_col(int sc){
+void arzanoid::Drawable::set_start_col(int sc){
     d_start_col = sc;
 }
 
 //see drawable.h
 //guarda drawable.h 
-void arkanoid::Drawable::set_end_col(int ec){
+void arzanoid::Drawable::set_end_col(int ec){
     d_end_col = ec;
 }
 
 //see drawable.h
 //guarda drawable.h 
-int arkanoid::Drawable::get_start_row(){
+int arzanoid::Drawable::get_start_row(){
     return d_start_row;
 }
 
 //see drawable.h
 //guarda drawable.h 
-int arkanoid::Drawable::get_end_row(){
+int arzanoid::Drawable::get_end_row(){
     return d_end_row;
 }
 
 //see drawable.h
 //guarda drawable.h 
-int arkanoid::Drawable::get_start_col(){
+int arzanoid::Drawable::get_start_col(){
     return d_start_col;
 }
 
 //see drawable.h
 //guarda drawable.h 
-int arkanoid::Drawable::get_end_col(){
+int arzanoid::Drawable::get_end_col(){
     return d_end_col;
 }
 
 //see drawable.h
 //guarda drawable.h 
-int arkanoid::Drawable::get_color(){
+int arzanoid::Drawable::get_color(){
     return d_color;
 }
 
 //see drawable.h
 //guarda drawable.h 
-char arkanoid::Drawable::get_char(){
+char arzanoid::Drawable::get_char(){
     return d_ch;
 }

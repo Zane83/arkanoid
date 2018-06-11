@@ -1,6 +1,6 @@
 #ifndef DRAWABLE_H
 #define DRAWABLE_H
-namespace arkanoid {
+namespace arzanoid {
 
 	class Drawable {
 

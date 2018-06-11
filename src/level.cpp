@@ -5,16 +5,16 @@
 
 //costruttore di default
 //imposta le caratteritiche dell'istanza della classe
-arkanoid::Level::Level(){
+arzanoid::Level::Level(){
     map_num_rows = 19;
     map_num_cols = 80;
     //number of horizontal slots where bricks can be placed
     //numero degli slot orizzontali dove i mattoncini possono essere inseriti
-    slots = (map_num_cols - 2) / arkanoid::Brick::width;
+    slots = (map_num_cols - 2) / arzanoid::Brick::width;
 
     //number of vertical slots where bricks can be placed
     //numero degli slot verticali dove i mattoncini possono essere inseriti
-    heights = (map_num_rows - 1) / arkanoid::Brick::height;
+    heights = (map_num_rows - 1) / arzanoid::Brick::height;
     
     //number of total slots within the map
     //numero di slot totali all'interno della mappa
@@ -30,7 +30,7 @@ arkanoid::Level::Level(){
 
 //see level.h
 //guarda level.h
-arkanoid::Level::~Level(){
+arzanoid::Level::~Level(){
     for(int i = 0; i < map_num_rows + 4; i++){
         delete[] M[i];
     }
@@ -39,7 +39,7 @@ arkanoid::Level::~Level(){
 }
 
 
-void arkanoid::Level::init_level(unsigned difficulty){
+void arzanoid::Level::init_level(unsigned difficulty){
     level_nr = difficulty;
     srand (time(NULL));
     init_map();
@@ -56,7 +56,7 @@ void arkanoid::Level::init_level(unsigned difficulty){
 
 }
 
-void arkanoid::Level::winning_block_positioning(){
+void arzanoid::Level::winning_block_positioning(){
     int row = rand() % (heights - 2 - (level_nr / 16)) + 1;
     int col = rand() % (slots - 2) + 1;
 
@@ -75,7 +75,7 @@ void arkanoid::Level::winning_block_positioning(){
 
 //see level.h
 //guarda level.h
-void arkanoid::Level::init_map(){
+void arzanoid::Level::init_map(){
     for(int i = 1; i < map_num_rows + 5; i++){
         for(int j = 1; j < map_num_cols; j++){
             M[i][j] = 0;
@@ -93,14 +93,14 @@ void arkanoid::Level::init_map(){
     
 }
 
-bool arkanoid::Level::corner_elements_positioning(int element_number, int col_shift, int row_shift){
+bool arzanoid::Level::corner_elements_positioning(int element_number, int col_shift, int row_shift){
 
     //it takes the row and column spacing from first slots (top-left corner) using a parameter
     //prende lo spaziamento dal primo slot (angolo in alto a destra) usando un parametro
     for(int i = row_shift; i < heights; i++){
         for(int j = col_shift; j < slots; j++){
-            if(M[1 + (arkanoid::Brick::height * i)][1 + (arkanoid::Brick::width * j)] == 0){
-                mark_element(1 + (i * arkanoid::Brick::height), 1 + (arkanoid::Brick::width * j), element_number);
+            if(M[1 + (arzanoid::Brick::height * i)][1 + (arzanoid::Brick::width * j)] == 0){
+                mark_element(1 + (i * arzanoid::Brick::height), 1 + (arzanoid::Brick::width * j), element_number);
                 return true;
             }
         }  
@@ -109,7 +109,7 @@ bool arkanoid::Level::corner_elements_positioning(int element_number, int col_sh
     return false;
 }
 
-void arkanoid::Level::random_elements_positioning(int element_number){
+void arzanoid::Level::random_elements_positioning(int element_number){
 
     unsigned i, slot;
     bool positionated = false;
@@ -120,8 +120,8 @@ void arkanoid::Level::random_elements_positioning(int element_number){
         //prende lo spaziamento dal primo slot (angolo in alto a destra) in modo casuale
         i = rand() % heights;
         slot = rand() % slots;
-        if(M[1 + (i * arkanoid::Brick::height)][1 + (arkanoid::Brick::width * slot)] == 0){
-            mark_element(1 + (i * arkanoid::Brick::height), 1 + (arkanoid::Brick::width * slot), element_number);
+        if(M[1 + (i * arzanoid::Brick::height)][1 + (arzanoid::Brick::width * slot)] == 0){
+            mark_element(1 + (i * arzanoid::Brick::height), 1 + (arzanoid::Brick::width * slot), element_number);
             positionated = true;
         }
     }
@@ -129,10 +129,10 @@ void arkanoid::Level::random_elements_positioning(int element_number){
 
 //see level.h
 //guarda level.h
-void arkanoid::Level::mark_element(int start_r, int start_c, int element_number){
+void arzanoid::Level::mark_element(int start_r, int start_c, int element_number){
     
-    for(int i = start_r; i < start_r + arkanoid::Brick::height; i++){
-        for(int j = start_c; j < start_c + arkanoid::Brick::width; j++){
+    for(int i = start_r; i < start_r + arzanoid::Brick::height; i++){
+        for(int j = start_c; j < start_c + arzanoid::Brick::width; j++){
             M[i][j] = element_number;
         }
     }
@@ -140,24 +140,24 @@ void arkanoid::Level::mark_element(int start_r, int start_c, int element_number)
 
 //see level.h
 //guarda level.h
-unsigned arkanoid::Level::get_brick_nr(){
+unsigned arzanoid::Level::get_brick_nr(){
     return brick_nr;
 }
 
 //see level.h
 //guarda level.h
-unsigned arkanoid::Level::get_map_num_rows(){
+unsigned arzanoid::Level::get_map_num_rows(){
     return map_num_rows;
 }
 
 //see level.h
 //guarda level.h
-unsigned arkanoid::Level::get_map_num_cols(){
+unsigned arzanoid::Level::get_map_num_cols(){
     return map_num_cols;
 }
 
 //see level.h
 //guarda level.h
-int arkanoid::Level::get_matrix(unsigned r_idx, unsigned c_idx){
+int arzanoid::Level::get_matrix(unsigned r_idx, unsigned c_idx){
     return M[r_idx][c_idx];
 }

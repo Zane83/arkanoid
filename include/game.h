@@ -10,7 +10,7 @@
 #include "level.h"
 
 
-namespace arkanoid {
+namespace arzanoid {
 
 	class Game {
 
@@ -28,11 +28,11 @@ namespace arkanoid {
 
 		//the Vector where Brick's instances are saved
 		//il Vector dove le istanze di Brick sono salvate
-		std::vector<arkanoid::Brick> bricks;
+		std::vector<arzanoid::Brick> bricks;
 
 		//a Vector used to save the 'bonus balls' that give bonus to the player 
 		//un Vector usato per salvare le 'bonus balls' che danno bonus al giocatore
-		std::vector<arkanoid::Ball> bonusballs;
+		std::vector<arzanoid::Ball> bonusballs;
 
 		//a Vector used to assign the 'bonus brick' role to a brick
 		//un Vector usato per assegnare il ruolo di 'bonus brick' ad un mattoncino

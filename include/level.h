@@ -4,7 +4,7 @@
 #include <random>
 #include <ncurses.h>
 #include "brick.h"
-namespace arkanoid {
+namespace arzanoid {
 
     class Level {
         //characteristics of each Level's instance

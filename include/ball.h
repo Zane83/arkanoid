@@ -2,7 +2,7 @@
 #define BALL_H
 #include "drawable.h"
 
-namespace arkanoid{
+namespace arzanoid{
 
     //Ball inherits Drawable with 'public' as the most accessible level
     //Ball eredita Drawable usando 'public' come livello più accessibile

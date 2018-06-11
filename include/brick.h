@@ -1,7 +1,7 @@
 #ifndef BRICK_H
 #define BRICK_H
 #include "drawable.h"
-namespace arkanoid {
+namespace arzanoid {
 
     //Brick inherits Drawable with 'public' as the most accessible level
     //Brick eredita Drawable usando 'public' come livello più accessibile

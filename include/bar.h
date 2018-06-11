@@ -1,7 +1,7 @@
 #ifndef BAR_H
 #define BAR_H
 #include "drawable.h"
-namespace arkanoid{
+namespace arzanoid{
 
     //Bar inherits Drawable with 'public' as the most accessible level
     //Bar eredita Drawable usando 'public' come livello più accessibile

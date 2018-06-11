@@ -13,24 +13,24 @@
 / 'ch' è il carattere che verrà passato al costruttore di default di Drawable
 / 'color' è l'intero indicante il colore che verrà passato al costruttore di default di Drawable
 */
-arkanoid::Ball::Ball(char ch, int color):Drawable(ch, 21, 39, 21, 39, color){
+arzanoid::Ball::Ball(char ch, int color):Drawable(ch, 21, 39, 21, 39, color){
     is_moving = false;
 }
 
 //see ball.h
 //guarda ball.h
-bool arkanoid::Ball::is_ball_moving(){
+bool arzanoid::Ball::is_ball_moving(){
     return is_moving;
 }
 
 //see ball.h
 //guarda ball.h
-void arkanoid::Ball::move(){
+void arzanoid::Ball::move(){
     is_moving = true;
 }
 
 //see ball.h
 //guarda ball.h
-void arkanoid::Ball::stop(){
+void arzanoid::Ball::stop(){
     is_moving = false;
 }

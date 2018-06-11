@@ -3,7 +3,7 @@
 
 int main(){
 
-	arkanoid::Game g;
+	arzanoid::Game g;
 	
 	while(g.is_running()){
 		g.update_all();

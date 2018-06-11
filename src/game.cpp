@@ -1,6 +1,6 @@
 #include "../include/game.h"
 
-void arkanoid::Game::introduction(){
+void arzanoid::Game::introduction(){
 
 	//prints an introduction message in a black background
 	//stampa un messaggio di introduzione in uno sfondo nero
@@ -16,7 +16,7 @@ void arkanoid::Game::introduction(){
 	clear();
 }
 
-void arkanoid::Game::ending_message(){
+void arzanoid::Game::ending_message(){
 
 	//prints an ending message in a black background
 	//stampa un messaggio finale in uno sfondo nero
@@ -31,7 +31,7 @@ void arkanoid::Game::ending_message(){
 	clear();
 }
 
-void arkanoid::Game::new_level_message(){
+void arzanoid::Game::new_level_message(){
 
 	//prints a new level message in a black background
 	//stampa un messaggio di nuovo livello in uno sfondo nero
@@ -46,7 +46,7 @@ void arkanoid::Game::new_level_message(){
 	clear();
 }
 
-void arkanoid::Game::init_startup_settings(){
+void arzanoid::Game::init_startup_settings(){
 
 	//some ncurses settings
 	//alcune impostazioni di ncurses
@@ -70,7 +70,7 @@ void arkanoid::Game::init_startup_settings(){
 
 }
 
-void arkanoid::Game::init_game_settings(){
+void arzanoid::Game::init_game_settings(){
 
 	nodelay(stdscr, TRUE);
 	getmaxyx(stdscr, actual_max_row, actual_max_col);
@@ -103,7 +103,7 @@ void arkanoid::Game::init_game_settings(){
 
 }
 
-bool arkanoid::Game::is_scrsize_changed(){
+bool arzanoid::Game::is_scrsize_changed(){
 	int n_max_row, n_max_col;
 	getmaxyx(stdscr, n_max_row, n_max_col);
 	if(n_max_row != actual_max_row || n_max_col != actual_max_col)
@@ -112,7 +112,7 @@ bool arkanoid::Game::is_scrsize_changed(){
 	return false;
 }
 
-void arkanoid::Game::init_colors(){
+void arzanoid::Game::init_colors(){
 	init_pair(1, COLOR_RED, COLOR_BLACK);
 	init_pair(2, COLOR_YELLOW, COLOR_BLACK);
 	init_pair(3, COLOR_WHITE, COLOR_BLACK);
@@ -120,11 +120,11 @@ void arkanoid::Game::init_colors(){
 	init_pair(5, COLOR_GREEN, COLOR_BLACK);
 }
 
-void arkanoid::Game::use_color(int color){
+void arzanoid::Game::use_color(int color){
 	attrset(COLOR_PAIR(color));
 }
 
-void arkanoid::Game::draw_border(){
+void arzanoid::Game::draw_border(){
 
 	use_color(4);
 	for(unsigned i = 0; i < actual_max_row; i++){
@@ -141,7 +141,7 @@ void arkanoid::Game::draw_border(){
 	
 }
 
-void arkanoid::Game::delete_border(){
+void arzanoid::Game::delete_border(){
 	for(unsigned i = 0; i < actual_max_row; i++){
 		mvprintw(i, 0, " ");
 		mvprintw(i, actual_max_col - 1, " ");
@@ -155,7 +155,7 @@ void arkanoid::Game::delete_border(){
 	}
 }
 
-void arkanoid::Game::update_bonusballs_position(){
+void arzanoid::Game::update_bonusballs_position(){
 	
 	for(int i = 0; i < bonusballs.size(); i++){
 		if(bonusballs[i].is_ball_moving()){
@@ -223,7 +223,7 @@ void arkanoid::Game::update_bonusballs_position(){
 	}
 }
 
-unsigned arkanoid::Game::update_ball_position(){
+unsigned arzanoid::Game::update_ball_position(){
 
 	if(!ball1.is_ball_moving() && g_input == ' '){
 
@@ -398,7 +398,7 @@ unsigned arkanoid::Game::update_ball_position(){
 	return 0;
 }
 
-void arkanoid::Game::update_bar_position(){
+void arzanoid::Game::update_bar_position(){
 
 	float xdiff;
 	if(g_input == KEY_LEFT){
@@ -462,37 +462,37 @@ void arkanoid::Game::update_bar_position(){
 	}
 }
 
-void arkanoid::Game::draw_health(){
+void arzanoid::Game::draw_health(){
 	use_color(5);
 	mvprintw(actual_max_row - 1, (actual_max_col / 4) - 6, "Vite: %d", health);
 	refresh();
 }
 
-void arkanoid::Game::draw_level_nr(){
+void arzanoid::Game::draw_level_nr(){
 	use_color(5);
 	mvprintw(actual_max_row - 1, round(actual_max_col * (static_cast<float>(3)/static_cast<float>(4))) - 9, "Livello: %d", level_nr);
 	refresh();
 }
 
-arkanoid::Game::Game():ball1('o', 5) {
+arzanoid::Game::Game():ball1('o', 5) {
 
-	alevel = new arkanoid::Level();
+	alevel = new arzanoid::Level();
 	init_startup_settings();
 	init_game_settings();
 	
 }
 
-arkanoid::Game::~Game(){
+arzanoid::Game::~Game(){
 	delete alevel;
 }
 
-void arkanoid::Game::new_game(){
+void arzanoid::Game::new_game(){
 	new_level_message();
 	alevel->init_level(level_nr);
 	init_game_settings();
 }
 
-void arkanoid::Game::end_actual_game(){
+void arzanoid::Game::end_actual_game(){
 	clear();
 	ball1.set_start_col(39);
 	ball1.set_end_col(39);
@@ -507,11 +507,11 @@ void arkanoid::Game::end_actual_game(){
 	bonusballs.erase(bonusballs.begin(), bonusballs.end());
 }
 
-void arkanoid::Game::get_input(){
+void arzanoid::Game::get_input(){
 	g_input = getch();
 }
 
-bool arkanoid::Game::is_running(){
+bool arzanoid::Game::is_running(){
 	
 	if(g_input != 27)
 		return true;
@@ -519,11 +519,11 @@ bool arkanoid::Game::is_running(){
 	return false;
 }
 
-void arkanoid::Game::exit(){
+void arzanoid::Game::exit(){
 	endwin();
 }
 
-bool arkanoid::Game::load_level(){
+bool arzanoid::Game::load_level(){
 
 	unsigned br_count = 0;
 	unsigned bonus_br = alevel->get_brick_nr() / 9;
@@ -539,8 +539,8 @@ bool arkanoid::Game::load_level(){
 	}
 
 	for(int k = 1; k < alevel->get_brick_nr(); k++){
-		for(int i = 1; i < alevel->get_map_num_rows(); i+= arkanoid::Brick::height){
-			for(int j = 1; j < alevel->get_map_num_cols(); j+= arkanoid::Brick::width){
+		for(int i = 1; i < alevel->get_map_num_rows(); i+= arzanoid::Brick::height){
+			for(int j = 1; j < alevel->get_map_num_cols(); j+= arzanoid::Brick::width){
 				if(alevel->get_matrix(i, j) == k){
 					if(k == 1)
 						bricks.push_back(Brick(i,j, 5));
@@ -562,7 +562,7 @@ bool arkanoid::Game::load_level(){
 
 }
 
-void arkanoid::Game::update_all(){
+void arzanoid::Game::update_all(){
 
 	int r = update_scene();
 	
@@ -579,19 +579,19 @@ void arkanoid::Game::update_all(){
 	}
 }
 
-void arkanoid::Game::erase_bricks(){
+void arzanoid::Game::erase_bricks(){
 	for(unsigned i = 0; i < bricks.size(); i++){
 		erase_object(bricks[i]);
 	}
 }
 
-void arkanoid::Game::draw_bricks(){
+void arzanoid::Game::draw_bricks(){
 	for(unsigned i = 0; i < bricks.size(); i++){
 		draw_object(bricks[i]);
 	}
 }
 
-unsigned arkanoid::Game::update_scene(){
+unsigned arzanoid::Game::update_scene(){
 
 	if(is_scrsize_changed()){
 		delete_border();
@@ -621,7 +621,7 @@ unsigned arkanoid::Game::update_scene(){
 	return update_ball_position();
 }
 
-void arkanoid::Game::draw_object(Drawable &dr){
+void arzanoid::Game::draw_object(Drawable &dr){
 	if(dr.is_visible()){
 
 		//data used to make an upscaled scene
@@ -648,7 +648,7 @@ void arkanoid::Game::draw_object(Drawable &dr){
 	}
 }
 
-void arkanoid::Game::erase_object(Drawable dr){
+void arzanoid::Game::erase_object(Drawable dr){
 	if(dr.is_visible()){
 		float xdiff = static_cast<float>(actual_max_col) / static_cast<float>(default_max_col);
 		float ydiff = static_cast<float>(actual_max_row) / static_cast<float>(default_max_row);
