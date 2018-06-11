@@ -231,7 +231,6 @@ unsigned arzanoid::Game::update_ball_position(){
 
 	}
 
-	int ob_id;
 	bool anglex = false, angley = false;
 	unsigned ball_px, ball_py;
 
@@ -289,17 +288,43 @@ unsigned arzanoid::Game::update_ball_position(){
 					draw_object(ball1);
 				}
 			} else {
-				ob_id = alevel->get_matrix(ball1.get_start_row(), ball1.get_start_col());
-				if(alevel->get_matrix(ball_py + row_mod, ball_px) != 0){
+				int ob_id = alevel->get_matrix(ball1.get_start_row(), ball1.get_start_col());
+				int c_id1 = alevel->get_matrix(ball_py + row_mod, ball_px);
+				int c_id2 = alevel->get_matrix(ball_py, ball_px + col_mod);
+				bool bothx = false, bothy = false;
+
+				if(c_id1 != 0){
 					row_mod = -row_mod;
+					bothy = true;
 				} else {
 					angley = true;
 				}
 
-				if(alevel->get_matrix(ball_py, ball_px + col_mod) != 0){
+				if(c_id2 != 0){
 					col_mod = -col_mod;
+					bothx = true;
 				} else {
 					anglex = true;
+				}
+
+				if(bothx && bothy){
+					if(c_id1 != -1){
+						erase_object(bricks[c_id1 - 1]);
+						bricks[c_id1 - 1].not_visible();
+						alevel->mark_element(bricks[c_id1 - 1].get_start_row(), bricks[c_id1 - 1].get_start_col(), 0);
+						if(c_id1 == 1){
+							return 2;
+						}
+					}
+
+					if(c_id2 != -1){
+						erase_object(bricks[c_id2 - 1]);
+						bricks[c_id2 - 1].not_visible();
+						alevel->mark_element(bricks[c_id2 - 1].get_start_row(), bricks[c_id2 - 1].get_start_col(), 0);
+						if(c_id2 == 1){
+							return 2;
+						}
+					}
 				}
 
 				if(anglex && angley){
