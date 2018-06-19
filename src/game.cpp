@@ -247,15 +247,19 @@ unsigned arzanoid::Game::update_ball_position(){
 			ball1.set_start_row(ball1.get_start_row() + row_mod);
 			ball1.set_end_row(ball1.get_end_row() + row_mod);
 
-			//all collision cases
-			//tutti i casi di collisione
+			//if the ball doesn't touch any brick or the border...
+			//se la pallina non tocca nessun mattone o il bordo...
 			if(alevel->get_matrix(ball1.get_start_row(), ball1.get_start_col()) == 0){
+
+				//if the ball touches the bar, inverts the vertical progress of the ball
 				if((ball1.get_start_row() == bar.get_start_row()) && (ball1.get_start_col() >= bar.get_start_col()) && (ball1.get_start_col() <= bar.get_end_col())){
 					row_mod = -row_mod;
 					ball1.set_start_col(ball1.get_start_col() + col_mod);
 					ball1.set_end_col(ball1.get_end_col() + col_mod);
 					ball1.set_start_row(ball1.get_start_row() + row_mod);
 					ball1.set_end_row(ball1.get_end_row() + row_mod);
+					//if the new position is outside of the screen limits (left-side-border or right-side-border), inverts the horizontal progress of the ball
+					//se la nuova posizione è fuori dai limiti dello schermo (il bordo al lato destro o il bordo al lato sinistro), inverte l'andamento orizzontale della pallina
 					if(alevel->get_matrix(ball1.get_start_row(), ball1.get_start_col()) == -1){
 						col_mod = -col_mod;
 						ball1.set_start_col(ball1.get_start_col() + col_mod);
@@ -263,9 +267,15 @@ unsigned arzanoid::Game::update_ball_position(){
 						ball1.set_start_row(ball1.get_start_row() + row_mod);
 						ball1.set_end_row(ball1.get_end_row() + row_mod);
 					}
-					draw_object(ball1);
 
+					//and then draws the ball with the new coordinates
+					//e successivamente disegna la pallina con le nuove coordinate
+					draw_object(ball1);
+				//else if the ball goes under the bar
+				//altrimenti se la pallina va sotto la barra
 				} else if(ball1.get_start_row() >= bar.get_start_row() && !((ball1.get_start_col() >= bar.get_start_col()) && (ball1.get_start_col() <= bar.get_end_col()))){
+					//if the health is higher then 1 blocks it movement and draws it on the bar, decreasing the health
+					//se la vita è maggiore di 1 blocca il movimento della pallina e la posizione sopra la barra, decrementando la vita
 					if(health > 1){
 						ball1.stop();
 						ball1.set_start_col((bar.get_end_col() + bar.get_start_col()) / 2);
@@ -288,6 +298,22 @@ unsigned arzanoid::Game::update_ball_position(){
 					draw_object(ball1);
 				}
 			} else {
+
+				//...else if the ball touches a brick or the border
+				//...oppure se la pallina tocca un mattone o il bordo
+
+				/*
+				/ it saves the id of the brick touched (ob_id) or the border (-1) and the x and 
+				/ y coordinates(c_id1 and c_id2) of the objects that would be touched if the ball moves 
+				/ only with an horizontal, or vertical, progress in this frame
+				*/
+
+				/*
+				/ salva l'id del mattone toccato (ob_id) o il bordo (-1) e le coordinate x e y (c_id1 e c_id2)
+				/ degli oggetti che verrebbero toccati se la palla si muovesse solo con un avanzamento 
+				/ orizzontale o verticale in questo frame
+				*/
+
 				int ob_id = alevel->get_matrix(ball1.get_start_row(), ball1.get_start_col());
 				int c_id1 = alevel->get_matrix(ball_py + row_mod, ball_px);
 				int c_id2 = alevel->get_matrix(ball_py, ball_px + col_mod);
@@ -306,7 +332,8 @@ unsigned arzanoid::Game::update_ball_position(){
 				} else {
 					anglex = true;
 				}
-
+				//if the ball touches a convex corner not composed by the borders
+				//se la palla tocca un angolo convesso non formato unicamente dai bordi
 				if(bothx && bothy){
 					if(c_id1 != -1){
 						erase_object(bricks[c_id1 - 1]);
@@ -327,11 +354,15 @@ unsigned arzanoid::Game::update_ball_position(){
 					}
 				}
 
+				//if the ball touches a concave corner
+				//se la palla tocca un angolo concavo
 				if(anglex && angley){
 					row_mod = -row_mod;
 					col_mod = -col_mod;
 				}
 
+				//if the object touched is a brick, the game erases it and if it's the winning brick stops the level
+				//se l'oggetto toccato è un mattone lo cancella e se è un mattone vincente (mattone verde) ferma il livello
 				if(ob_id != -1){
 					if(bricks[ob_id - 1].is_bonus_brick()){
 						bonusballs.push_back(Ball('*', 3));
@@ -351,11 +382,15 @@ unsigned arzanoid::Game::update_ball_position(){
 					}
 				}
 				
+				//updates ball's coordinates...
+				//aggiorna le cooridnate della pallina...
 				ball1.set_start_col(ball1.get_start_col() + col_mod);
 				ball1.set_end_col(ball1.get_end_col() + col_mod);
 				ball1.set_start_row(ball1.get_start_row() + row_mod);
 				ball1.set_end_row(ball1.get_end_row() + row_mod);
 
+				//...but if it is inside the borders or outside of them corrects the ball's movement
+				//...ma se si trova all'interno dei bordi o fuori ad essi corregge il movimento della pallina
 				if(alevel->get_matrix(ball1.get_start_row(), ball1.get_start_col()) != -1){
 					if((ball1.get_start_row() == bar.get_start_row()) && (ball1.get_start_col() >= bar.get_start_col()) && (ball1.get_start_col() <= bar.get_end_col())){
 						if(anglex){
@@ -423,9 +458,14 @@ unsigned arzanoid::Game::update_ball_position(){
 	return 0;
 }
 
+
+//it moves correctly the bar
+//fa muovere correttamente la barra
 void arzanoid::Game::update_bar_position(){
 
 	float xdiff;
+	//if the pressed key is left arrow...
+	//se il tasto premuto è la frecca sinistra...
 	if(g_input == KEY_LEFT){
 		if(bar.get_start_col() > bar_speed){
 			erase_object(bar);
@@ -454,6 +494,9 @@ void arzanoid::Game::update_bar_position(){
 				}
 			}
 		}
+
+	//if the pressed key is right arrow...
+	//se il tasto premuto è la frecca destra...
 	} else if(g_input == KEY_RIGHT){
 		
 		if(bar.get_end_col() < default_max_col - bar_speed - 2){
@@ -487,18 +530,25 @@ void arzanoid::Game::update_bar_position(){
 	}
 }
 
+
+//draws player's healts
+//disegna la vita del giocatore
 void arzanoid::Game::draw_health(){
 	use_color(5);
 	mvprintw(actual_max_row - 1, (actual_max_col / 4) - 6, "Vite: %d", health);
 	refresh();
 }
 
+//draws actual level's number
+//disegna il numero del livello attuale
 void arzanoid::Game::draw_level_nr(){
 	use_color(5);
 	mvprintw(actual_max_row - 1, round(actual_max_col * (static_cast<float>(3)/static_cast<float>(4))) - 9, "Livello: %d", level_nr);
 	refresh();
 }
 
+//initilizes the Game object and loads all settings
+//inizializza l'oggetto Game e carica tutte le impostazioni
 arzanoid::Game::Game():ball1('o', 5) {
 
 	alevel = new arzanoid::Level();
@@ -507,10 +557,15 @@ arzanoid::Game::Game():ball1('o', 5) {
 	
 }
 
+//destroys the memory that was allocated for the actual level (pointed by alevel)
+//distrugge la memoria allocata per il livello attuale (puntata da alevel)
 arzanoid::Game::~Game(){
 	delete alevel;
 }
 
+
+//each time a new level starts, this member function is called
+//ogni volta che un nuovo livello inizia viene chiamata questa funzione membro
 void arzanoid::Game::new_game(){
 	new_level_message();
 	alevel->init_level(level_nr);
@@ -653,12 +708,20 @@ void arzanoid::Game::draw_object(Drawable &dr){
 		//dati utilizzato per creare una scena up-scalata
 		float xdiff = static_cast<float>(actual_max_col) / static_cast<float>(default_max_col);
 		float ydiff = static_cast<float>(actual_max_row) / static_cast<float>(default_max_row);
+
+		//does a multiplication of the object's coordinates for the difference between the previous and the current screen sizes
+		//fa una moltiplicazione delle coordinate dell'oggetto per la differenza tra la dimensione della schermata precedente e quella corrente
+
 		unsigned start_r = round(dr.get_start_row() * ydiff);
 		unsigned end_r = round(dr.get_end_row() * ydiff);
 		unsigned start_c = round(dr.get_start_col() * xdiff);
 		unsigned end_c = round(dr.get_end_col() * xdiff);
 
+
 		use_color(dr.get_color());
+
+		//draws pixel for pixel
+		//disegna pixel per pixel
 
 		for(unsigned i = start_r; i <= end_r; i++)
 		{
@@ -673,6 +736,9 @@ void arzanoid::Game::draw_object(Drawable &dr){
 	}
 }
 
+
+//does the same operations of 'draw_object' but it erases the object passed
+//fa le stesse operazioni di 'draw_object' ma cancella l'oggetto passato
 void arzanoid::Game::erase_object(Drawable dr){
 	if(dr.is_visible()){
 		float xdiff = static_cast<float>(actual_max_col) / static_cast<float>(default_max_col);
